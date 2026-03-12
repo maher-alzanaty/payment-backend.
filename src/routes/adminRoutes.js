@@ -25,12 +25,14 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({ id: admin.id, email: admin.email }, JWT_SECRET, { expiresIn: "1h" });
 
     // Set cookie
-   res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // required for HTTPS
-  sameSite: "none",    // allow cross-site
-  maxAge: 24 * 60 * 60 * 1000
-});
+    res.cookie("token", token, {
+      httpOnly: true,       // cannot access from JS
+      maxAge: 60 * 60 * 1000, // 1 hour
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
+
     // send admin info without token (token is in cookie now)
     res.json({ id: admin.id, name: admin.name, email: admin.email });
   } catch (err) {
