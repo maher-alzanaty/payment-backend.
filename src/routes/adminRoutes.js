@@ -34,13 +34,17 @@ router.post("/login", async (req, res) => {
     );
 
     // Set cookie correctly
-    res.cookie("token", token, {
-      httpOnly: true, // not accessible from JS
-      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site in prod, same-site in dev
-      path: "/", // available on all routes
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    });
+   // ✅ send proper 200 response, not 204
+  res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+    .status(200)
+    .json({ message: "Login success", admin: { id: admin.id, name: admin.name, email: admin.email } });
 
     // Send admin info (token is in cookie)
     res.json({ id: admin.id, name: admin.name, email: admin.email });
