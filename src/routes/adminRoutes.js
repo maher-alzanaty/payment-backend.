@@ -13,6 +13,7 @@ router.use(cookieParser()); // <-- required to read/write cookies
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 // ================= POST admin login (PUBLIC) =================
+// login route in adminRoutes.js
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -24,14 +25,14 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign({ id: admin.id, email: admin.email }, JWT_SECRET, { expiresIn: "1h" });
 
-    // Set cookie
-  res.cookie("token", token, {
-  httpOnly: true,
- secure: process.env.NODE_ENV === "production",  // required for HTTPS
-  sameSite: "none",  // allow cross-site
-    path: "/",                 // important
-  maxAge: 24 * 60 * 60 * 1000
-});
+    // ✅ Set cookie correctly for dev and prod
+    res.cookie("token", token, {
+      httpOnly: true, // not accessible from JS
+      secure: process.env.NODE_ENV === "production", // only HTTPS in prod
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site in prod, same-site in dev
+      path: "/", // important: cookie available on all routes
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
 
     // send admin info without token (token is in cookie now)
     res.json({ id: admin.id, name: admin.name, email: admin.email });
