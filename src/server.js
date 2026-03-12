@@ -21,7 +21,7 @@ app.use(
   })
 );
 
-
+app.set("trust proxy", 1);//This fixes secure cookies behind proxies. foreploy on Render, Express sometimes thinks the request is HTTP instead of HTTPS, and then refuses to send secure cookies.
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
