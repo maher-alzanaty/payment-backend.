@@ -17,24 +17,32 @@ const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Find admin by email
     const admin = await prisma.admin.findUnique({ where: { email } });
     if (!admin) return res.status(401).json({ error: "Invalid credentials" });
 
+    // Check password
     const valid = await bcrypt.compare(password, admin.password);
     if (!valid) return res.status(401).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign({ id: admin.id, email: admin.email }, JWT_SECRET, { expiresIn: "1h" });
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: admin.id, email: admin.email },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-    // ✅ Set cookie correctly for dev and prod
+    // Set cookie correctly
     res.cookie("token", token, {
       httpOnly: true, // not accessible from JS
       secure: process.env.NODE_ENV === "production", // only HTTPS in prod
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site in prod, same-site in dev
-      path: "/", // important: cookie available on all routes
+      path: "/", // available on all routes
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
-    // send admin info without token (token is in cookie now)
+    // Send admin info (token is in cookie)
     res.json({ id: admin.id, name: admin.name, email: admin.email });
   } catch (err) {
     console.error(err);
