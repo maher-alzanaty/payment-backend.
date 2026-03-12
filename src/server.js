@@ -15,9 +15,11 @@ app.use(cookieParser()); // <-- must be before routes
 
 app.use(
   cors({
-    // origin: "http://localhost:3000", // your frontend URL
-    origin: true,      // allow all origins
-    credentials: true,               // allow cookies to be sent
+    origin: [
+      "http://localhost:3000",
+      "https://payment-gateway-frontend8.vercel.app"
+    ],
+    credentials: true
   })
 );
 
