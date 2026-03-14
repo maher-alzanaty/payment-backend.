@@ -35,17 +35,25 @@ router.post("/login", async (req, res) => {
 
     // Set cookie correctly
    // ✅ send proper 200 response, not 204
-  res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: "false",
-      sameSite:"none",
-      path: "/",
-      maxAge: 24 * 60 * 60 * 1000,
-    })
-    .status(200)
-    .json({ message: "Login success", admin: { id: admin.id, name: admin.name, email: admin.email } });
-
+  // res
+  //   .cookie("token", token, {
+  //     httpOnly: true,
+  //     secure: "false",
+  //     sameSite:"none",
+  //     path: "/",
+  //     maxAge: 24 * 60 * 60 * 1000,
+  //   })
+  //   .status(200)
+  //   .json({ message: "Login success", admin: { id: admin.id, name: admin.name, email: admin.email } });
+res.cookie("token", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production", // must be true for HTTPS
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  path: "/",
+  maxAge: 24 * 60 * 60 * 1000,
+})
+  .status(200)
+   .json({ message: "Login success", admin: { id: admin.id, name: admin.name, email: admin.email } });
  
   } catch (err) {
     console.error(err);
