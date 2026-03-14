@@ -46,8 +46,7 @@ router.post("/login", async (req, res) => {
     .status(200)
     .json({ message: "Login success", admin: { id: admin.id, name: admin.name, email: admin.email } });
 
-    // Send admin info (token is in cookie)
-    res.json({ id: admin.id, name: admin.name, email: admin.email });
+ 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Login failed" });
