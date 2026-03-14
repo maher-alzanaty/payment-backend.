@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://payment-gateway-frontend-new1.vercel.app"
+      "https://payment-gateway-frontend-new2.vercel.app"
     ],
     credentials: true
   })
