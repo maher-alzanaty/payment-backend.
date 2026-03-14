@@ -13,6 +13,12 @@ router.use(cookieParser()); // <-- required to read/write cookies
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 // ================= POST admin login (PUBLIC) =================
+
+
+// adminRoutes.js
+router.get("/me", authenticateAdmin, async (req, res) => {
+  res.json({ id: req.admin.id, name: req.admin.name, email: req.admin.email });
+});
 // login route in adminRoutes.js
 router.post("/login", async (req, res) => {
   try {
